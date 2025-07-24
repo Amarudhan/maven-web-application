@@ -1,1 +1,16 @@
+<settings>
+  <servers>
+    <server>
+      <id>nexus</id> 
+      <username>admin</username>
+      <password>Amar@6599</password>
+    </server>
+  </servers>
+</settings>
 
+<distributionManagement>
+    <snapshotRepository>
+        <id>nexus</id>  
+        <url>http://18.143.164.255:8081/repository/citibank-snapshots/</url>
+    </snapshotRepository>
+</distributionManagement>
