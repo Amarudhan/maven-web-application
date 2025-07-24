@@ -11,6 +11,6 @@
 <distributionManagement>
     <snapshotRepository>
         <id>nexus</id>  
-        <url>http://18.143.164.255:8081/repository/citibank-snapshots/</url>
+        <url>http://13.229.88.216:8081/repository/citibank-snapshots/</url>
     </snapshotRepository>
 </distributionManagement>
