@@ -1,0 +1,32 @@
+node {
+    properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '5', daysToKeepStr: '', numToKeepStr: '5')), pipelineTriggers([pollSCM('* * * * *')])])
+    echo "The Job Name Is :${env.JOB_NAME}"
+    echo "The Build Number Is:${env.BUILD_NUMBER}"
+    echo "The Node Name Is:${env.NODE_NAME}"
+    echo "The Home Dir Is:${env.JENKINS_HOME}"
+    def mavenHome = tool name: "maven3.9.6"
+
+    configFileProvider([configFile(fileId: 'nexus-settings', variable: 'MAVEN_SETTINGS')]) {
+        
+        stage('CheckoutCode') {
+            git branch: 'development', credentialsId: '5b88eb11-008c-4be6-bbb0-770aaf12ee39', url: 'https://github.com/Amarudhan/maven-web-application.git'
+        }
+
+        stage('Build') {
+            sh "${mavenHome}/bin/mvn clean package --settings $MAVEN_SETTINGS"
+        }
+
+        stage('ExecuteSonarQubeReport') {
+            sh "${mavenHome}/bin/mvn clean sonar:sonar --settings $MAVEN_SETTINGS"
+        }
+
+        stage('UploadIntoNexus') {
+            sh "${mavenHome}/bin/mvn clean deploy --settings $MAVEN_SETTINGS"
+        }
+        stage('DeployAppIntoTomcat'){
+sshagent(['7e9199c6-62d8-490b-b0b0-b09c7f7ebbc0']) {
+   sh "scp -o StrictHostKeyChecking=no target/maven-web-application-1.0-SNAPSHOT.war ec2-user@172.31.23.248:/opt/apache-tomcat-9.0.107/webapps"
+}
+}
+    }
+}
